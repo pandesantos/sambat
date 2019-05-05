@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Santosh
- * Date: 5/5/2019
- * Time: 11:50 AM
- */
-
 namespace Santosh\Sambat;
 
 

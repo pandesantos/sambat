@@ -1,156 +1,203 @@
 <?php
+
 namespace Santosh\Sambat;
 
+use Santosh\Sambat\Exceptions\DateException;
 
 class Converter
 {
-    private $date;
+    private $nepaliDate;
 
-    private $maxDaysInMonths = array(
-        1975 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        1976 => array(31,32,31,32,31,30,30,30,29,29,30,30),
-        1977 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        1978 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        1979 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        1980 => array(31,32,31,32,31,30,30,29,30,29,30,30),
-        1981 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        1982 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        1983 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        1984 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        1985 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        1986 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        1987 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        1988 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        1989 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        1990 => array(31,31,31,32,31,31,29,30,30,29,29,31),
-        1991 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        1992 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        1993 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        1994 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        1995 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        1996 => array(31,31,32,32,31,30,29,30,30,29,30,30),
-        1997 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        1998 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        1999 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2000 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        2001 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2002 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2003 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2004 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        2005 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2006 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2007 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2008 => array(31,31,31,32,31,31,29,30,30,29,29,31),
-        2009 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2010 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2011 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2012 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        2013 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2014 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2015 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2016 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        2017 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2018 => array(31,32,31,32,31,30,30,29,30,29,30,30),
-        2019 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        2020 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        2021 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2022 => array(31,32,31,32,31,30,30,30,29,29,30,30),
-        2023 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        2024 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        2025 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2026 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2027 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        2028 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2029 => array(31,31,32,31,32,30,30,29,30,29,30,30),
-        2030 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2031 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        2032 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2033 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2034 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2035 => array(30,32,31,32,31,31,29,30,30,29,29,31),
-        2036 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2037 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2038 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2039 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        2040 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2041 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2042 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2043 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        2044 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2045 => array(31,32,31,32,31,30,30,29,30,29,30,30),
-        2046 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2047 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        2048 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2049 => array(31,32,31,32,31,30,30,30,29,29,30,30),
-        2050 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        2051 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        2052 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2053 => array(31,32,31,32,31,30,30,30,29,29,30,30),
-        2054 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        2055 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2056 => array(31,31,32,31,32,30,30,29,30,29,30,30),
-        2057 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2058 => array(30,32,31,32,31,30,30,30,29,30,29,31),
-        2059 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2060 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2061 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2062 => array(30,32,31,32,31,31,29,30,29,30,29,31),
-        2063 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2064 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2065 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2066 => array(31,31,31,32,31,31,29,30,30,29,29,31),
-        2067 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2068 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2069 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2070 => array(31,31,31,32,31,31,29,30,30,29,30,30),
-        2071 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2072 => array(31,32,31,32,31,30,30,29,30,29,30,30),
-        2073 => array(31,32,31,32,31,30,30,30,29,29,30,31),
-        2074 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        2075 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2076 => array(31,32,31,32,31,30,30,30,29,29,30,30),
-        2077 => array(31,32,31,32,31,30,30,30,29,30,29,31),
-        2078 => array(31,31,31,32,31,31,30,29,30,29,30,30),
-        2079 => array(31,31,32,31,31,31,30,29,30,29,30,30),
-        2080 => array(31,32,31,32,31,30,30,30,29,29,30,30),
-        2081 => array(31,31,32,32,31,30,30,30,29,30,30,30),
-        2082 => array(30,32,31,32,31,30,30,30,29,30,30,30),
-        2083 => array(31,31,32,31,31,30,30,30,29,30,30,30),
-        2084 => array(31,31,32,31,31,30,30,30,29,30,30,30),
-        2085 => array(31,32,31,32,30,31,30,30,29,30,30,30),
-        2086 => array(30,32,31,32,31,30,30,30,29,30,30,30),
-        2087 => array(31,31,32,31,31,31,30,30,29,30,30,30),
-        2088 => array(30,31,32,32,30,31,30,30,29,30,30,30),
-        2089 => array(30,32,31,32,31,30,30,30,29,30,30,30),
-        2090 => array(30,32,31,32,31,30,30,30,29,30,30,30),
-        2091 => array(31,31,32,32,31,30,30,29,30,29,30,30),
-        2092 => array(30,31,32,32,31,30,30,30,29,30,30,30),
-        2093 => array(30,32,31,32,31,30,30,30,29,29,30,30),
-        2094 => array(31,31,32,31,31,30,30,30,29,30,30,30),
-        2095 => array(31,31,32,31,31,31,30,29,30,30,30,30)
-    );
+    private $engDate;
+
+    private $nepDaysMonthsYears;
+
+    private $config;
+
+    private $nepMonths;
+
+    private $nepDayOfWeek;
+
+    private $startEng;
+
+    private $startNep;
+
+    private $error;
+
+    public function __construct()
+    {
+        $this->config = new Config\Config();
+
+        $this->nepDaysMonthsYears = $this->config->nepDaysMonthsYears;
+
+        $this->engDaysMonths = $this->config->engDaysMonths;
+
+        $this->engDaysLeapYear = $this->config->engDaysLeapYear;
+
+        $this->nepMonths = $this->config->mahina;
+
+        $this->nepDayOfWeek = $this->config->bars;
+
+        $this->startNep = min(array_keys($this->config->nepDaysMonthsYears));
+
+        $this->startEng = $this->startNep - 56;
+    }
 
     /**
      * @param $date
      * @return array
      */
-    private function separate($date){
-        $dates = explode('-', $date);
+    private function separate($date)
+    {
+        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $date)) {
+            // if date format is y-m-d
+            $dates = explode('-', $date);
+        } elseif (preg_match("/^[0-9]{4}[-.\/ -](0[1-9]|1[0-2])[-.\/ -](0[1-9]|[1-2][0-9]|3[0-1])$/", $date)) {
+            // if date format is y/m/d
+            $dates = explode('/', $date);
+        } else {
+            $this->error = "Invalid date format";
+        }
 
-        return $dates;
+        return [
+            'y' => (int)(isset($dates[0]) ? $dates[0] : null),
+            'm' => (int)(isset($dates[1]) ? $dates[1] : null),
+            'd' => (int)(isset($dates[1]) ? $dates[1] : null)
+        ];
+
+    }
+
+    private function isInRangeEng($date)
+    {
+        $minYear = min(array_keys($this->nepDaysMonthsYears));
+
+        $maxYear = max(array_keys($this->nepDaysMonthsYears));
+
+        if ($date['y'] < $minYear || $date['y'] > $maxYear) {
+            $this->error = "Date range error. Supported only between $minYear - $maxYear";
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isLeapYear($year)
+    {
+        if ($year % 100 === 0) {
+            if ($year % 400 == 0) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            if ($year % 4 == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * @param $date
+     * @throws DateException
+     */
+    public function adToBs($date)
+    {
+        $date = array_filter($this->separate($date));
+
+        if (count($date) < 3) {
+            throw new DateException($this->error);
+        }
+
+        if ($this->isInRangeEng($date)) {
+            $startNepMonth = 9;
+            $startNepDay = 16;
+
+            $totalEngDays = 0;
+            $day = 6;
+
+            // count total no. of days in year
+            for ($i = 0; $i < ($date['y'] - $this->startEng); $i++) {
+                if ($this->isLeapYear($this->startEng + $i) === true) {
+                    for ($j = 0; $j < 12; $j++)
+                        $totalEngDays += $this->engDaysLeapYear[$j];
+                } else {
+                    for ($j = 0; $j < 12; $j++) {
+                        $totalEngDays += $this->engDaysMonths[$j];
+                    }
+                }
+            }
+
+            // count total no. of days in months
+
+            for ($i = 0; $i < ($date['m'] - 1); $i++) {
+                if ($this->isLeapYear($date['y']) === true) {
+                    $totalEngDays += $this->engDaysLeapYear[$i];
+                } else {
+                    $totalEngDays += $this->engDaysMonths[$i];
+                }
+            }
+
+            $totalEngDays += $date['d'];
+
+            $i = $this->startNep; $j = $startNepMonth;
+            $totalNepDays = $startNepDay;
+            $month = $startNepMonth;
+            $year = $this->startNep;
+
+
+            // count nepali date from array
+            while($totalEngDays != 0) {
+                $a = $this->nepDaysMonthsYears[$i][$j - 1];
+                $totalNepDays++;
+                $day++;								//count the days in 7 days, 1 week
+                if($totalNepDays > $a){
+                    $month++;
+                    $totalNepDays=1;
+                    $j++;
+                }
+                if($day > 7)
+                    $day = 1;
+                if($month > 12){
+                    $year++;
+                    $month = 1;
+                }
+                if($j > 12){
+                    $j = 1; $i++;
+                }
+                $totalEngDays--;
+            }
+
+            $this->nepaliDate =  array(
+                'y' => $year,
+                'm' => $month,
+                'd' => $day
+            );
+
+            return $this->nepaliDate;
+        }
+
+
+        throw new DateException($this->error);
     }
 
 
-    public function fromAD($date){
-
-
-        $date = $this->separate($date);
-
-
-        return $date;
+    private function getNepaliMonth($month)
+    {
+        // array starts with index 0
+        if (isset($this->nepMonths[$month - 1])) {
+            return $this->nepMonths[$month - 1];
+        }
     }
 
-    public function format($format){
-
+    private function getNepaliBar($day)
+    {
+        // array starts with index 0
+        if (isset($this->nepMonths[$day - 1])) {
+            return $this->nepMonths[$day - 1];
+        }
     }
 }
