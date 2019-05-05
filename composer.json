@@ -1,0 +1,29 @@
+{
+    "name": "santosh/sambat",
+    "description": "Convert date from Gregorian (A.D) to Bikram Sambat(B.S) and vice versa",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "pandesantos",
+            "email": "yasrpande@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Santosh\\Sambat\\": "packages/santosh/sambat/src"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Santosh\\Sambat\\BSDateServiceProvider"
+            ],
+            "aliases": {
+                "Sambat": "Santosh\\Sambat\\Facades\\Sambat"
+            }
+        }
+    }
+}
